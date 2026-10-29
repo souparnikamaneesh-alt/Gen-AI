@@ -1,0 +1,88 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4ecd0aed-1d24-46ef-b10e-4381c2c70a97",
+      "name": "When chat message received",
+      "webhookId": "5b96d6b9-79fb-43c6-a009-f95a0b058354"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "540093b6-7a81-4bf0-886b-7e79d7335ba5",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "d2fc4de4-0bda-4bdc-88f0-ee5dafa2063c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9XuyuaYRCe58M8pD",
+          "name": "Google Gemini(PaLM) Api account 103358"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8ea74ed1-8f6c-4c82-b64c-48a7899a7818",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "i5RCFJ2ltJYjVHMw",
+  "tags": []
+}

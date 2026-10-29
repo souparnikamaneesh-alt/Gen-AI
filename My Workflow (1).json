@@ -1,0 +1,90 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "availableInChat": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fdbe9b43-0144-41c6-ba73-1da7917234a8",
+      "name": "When chat message received",
+      "webhookId": "37d26591-d087-4147-a9e2-95d6506ec7d3"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "75c163fe-915c-4a37-bca1-bb8f36e1a0a0",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "b53a5170-d337-443d-a6c0-6c400a589339",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9VNsfkt9B9qP7RhG",
+          "name": "Google Gemini(PaLM) Api account 103248"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "120f49d8-1d4d-4d39-8cd0-a1124c8e0a03",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "8h5w6XkgVp2N9TCO",
+  "tags": []
+}

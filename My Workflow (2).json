@@ -1,0 +1,206 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1vy4jsWhqX_xYMJAkMQIMZMpe7J2YF-T9KE97RxqdK4E",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vy4jsWhqX_xYMJAkMQIMZMpe7J2YF-T9KE97RxqdK4E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vy4jsWhqX_xYMJAkMQIMZMpe7J2YF-T9KE97RxqdK4E/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -16
+      ],
+      "id": "e2a4cafd-276b-40b1-8fa0-854988874fcc",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "U31qGRPilW8bwSnH",
+          "name": "Google Sheets Trigger account 7329"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=summarize this: {{ $json['article link'] }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -336,
+        0
+      ],
+      "id": "3d06f106-69b3-4da3-9eb7-4804741fb1c2",
+      "name": "summarizes the article"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Assume the role of an industry expert and draft a LinkedIn post discussing key points from a news article relevant to artificial intelligence. The post should provide insightful analysis, connect with current industry trends, and encourage professional engagement or discussions. Highlight any notable implications for the industry. LinkedIn supports detailed posts, so ensure it is informative and structured. Add a professional call to action. Directly start with the post content, do not add any primer like \"here is your content for LinkedIn post\". Here's a summary of the article: {{ $json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        16,
+        16
+      ],
+      "id": "6e86d0b9-dc33-4d5f-acdc-5ed6bedf4f6e",
+      "name": "generate linkedin post"
+    },
+    {
+      "parameters": {
+        "person": "4QnW9itcam",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        352,
+        32
+      ],
+      "id": "f504330a-91a6-4cd4-bb03-111c84a6c211",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "QMQQxLlAZPSrD6wu",
+          "name": "LinkedIn account 6205"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-235b-a22b-thinking-2507",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        208
+      ],
+      "id": "85a0b147-e61c-48c0-b57e-5103df869f24",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "XImp3i5kmKAA02th",
+          "name": "OpenRouter account 3584"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        224
+      ],
+      "id": "730353cd-0eb3-41e8-a138-d49612301091",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "XImp3i5kmKAA02th",
+          "name": "OpenRouter account 3584"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "summarizes the article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summarizes the article": {
+      "main": [
+        [
+          {
+            "node": "generate linkedin post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate linkedin post": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summarizes the article",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate linkedin post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5b6d7d1a-aa44-453e-b9c0-a5dd5c1569b7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "RqXHJMPiJpY5pOki",
+  "tags": []
+}
