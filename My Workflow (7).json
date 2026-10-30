@@ -1,0 +1,190 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2918bdee-8752-49f8-ae6d-c0722c96e745",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "eec416af-d76c-461e-adbe-d29d89483dbd",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "title, link, contentSnippet",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "549aa17a-10e8-4d7d-bd27-14ebb0f1df66",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a funding analyst. Analyze the funding news articles from the RSS feed provided.  Format your response exactly as follows:  ═════════════════════════════════════════ LARGEST FUNDING ROUNDS TODAY ═════════════════════════════════════════  DEAL #1 ──────────────────────────────────────────────────────────── Company Name: [Company name from article] Link: [Direct URL from RSS feed] What They Do: [1 sentence description of the company's business] Funding Amount: $[Amount in millions] Round Type: [Series A / Series B / Series C / Seed / Other] Lead Investor: [Primary investor name] Other Investors: [List 2-3 other investors if mentioned] Use of Funds: [1 sentence - what they'll use money for] Strategic Importance: [1-2 sentences why this deal matters]  (Repeat for DEAL #2 and DEAL #3)  ═════════════════════════════════════════ FUNDING MARKET SNAPSHOT ═════════════════════════════════════════  Total Capital Deployed: $[Total amount] Number of Deals: [Count] Most Active Sectors: [Sector 1, Sector 2, Sector 3] Geographic Focus: [Which regions/countries getting funded] Average Deal Size: $[Amount]  ═════════════════════════════════════════ STARTUPS TO WATCH ═════════════════════════════════════════  Startup 1: [Name] Link: [URL] What They Do: [1 sentence description] Raised: $[Amount] Why Watch: [1 sentence - why this startup is important to monitor]  (Repeat for Startup 2 and Startup 3)  ═════════════════════════════════════════ STRATEGIC INSIGHTS ═════════════════════════════════════════  Market Opportunity: [1-2 sentences about emerging markets being funded] Potential Competitors: [1-2 sentences about new competitors entering the space] Partnership Potential: [1-2 sentences about companies we could partner with] Acquisition Target: [1-2 sentences about companies we should consider acquiring]"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        0
+      ],
+      "id": "8602312b-afd8-481c-8722-44b15256a271",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        208
+      ],
+      "id": "b4f1b2fc-2af4-4ce4-849c-1acf1535fbf0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9XuyuaYRCe58M8pD",
+          "name": "Google Gemini(PaLM) Api account 103358"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nishamaneesh1979@gmail.com",
+        "subject": "MY NEW AUTOMATION",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "08a1a125-57b4-4618-b23f-6f1f05763701",
+      "name": "Send a message",
+      "webhookId": "71f9fbcf-7690-4759-aaef-7b3bb38f858d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uWGvBxr06JH4oWum",
+          "name": "Gmail account 6509"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f0c51c97-b49b-43ed-94b2-55a0a919e558",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "3N0lpl1rZ1QETlx8",
+  "tags": []
+}
