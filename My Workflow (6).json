@@ -1,0 +1,190 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "268c6fcd-312b-476d-a99b-34719736d46d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1d4c810a-4885-4097-a828-ea3e9d239c98",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "title, link, contentSnippet",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "86b0aeb9-376d-4d92-be02-b150ff31c96f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a research summarizer. Analyze the AI research papers from the RSS feed provided.  IMPORTANT: Format your response EXACTLY as shown below. Do NOT add any extra text, headers, or explanations.  ═════════════════════════════════════════ TOP 3 AI RESEARCH BREAKTHROUGHS ═════════════════════════════════════════  PAPER #1 ──────────────────────────────────────────────────────────── Title: [Exact paper title from RSS] Link: [Direct URL from RSS feed] Summary: [2-3 sentences explaining what the paper does in simple language] Why It Matters: [1 sentence explaining why engineers should care] Implementation Level: [Beginner / Intermediate / Advanced]  (Repeat for PAPER #2 and PAPER #3)  ═════════════════════════════════════════ TRENDING RESEARCH TOPICS ═════════════════════════════════════════  Topic 1: [Research topic] - [1 sentence description] Topic 2: [Research topic] - [1 sentence description] Topic 3: [Research topic] - [1 sentence description]  ═════════════════════════════════════════ TOOLS & FRAMEWORKS MENTIONED ═════════════════════════════════════════  Framework 1: [Name] - [1 sentence what it does] Framework 2: [Name] - [1 sentence what it does] Framework 3: [Name] - [1 sentence what it does]  ═════════════════════════════════════════ OTHER NOTABLE PAPERS (5-7 papers) ═════════════════════════════════════════  1. [Paper Title] - Link: [URL] - [1 sentence summary] 2. [Paper Title] - Link: [URL] - [1 sentence summary] ..."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        0
+      ],
+      "id": "c02b9ffb-0a93-4659-978f-2f4f7830596d",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "sendTo": "nishamaneesh1979@gmail.com",
+        "subject": " MY FIRST AUTOMATION",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "adc320f9-77e5-4e1e-b8ff-88ff22715893",
+      "name": "Send a message",
+      "webhookId": "4a17f16f-d5a1-4b92-b331-ee8b0b76efd3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uWGvBxr06JH4oWum",
+          "name": "Gmail account 6509"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openrouter/free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        656,
+        224
+      ],
+      "id": "1b8f5da4-e495-4fdc-9a78-63b15aed14b3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "pMXrtv7xVo0y11gT",
+          "name": "OpenRouter account 4131"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4b037c6b-d0b7-4233-a76e-4060fef5a8f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "t8ExKwQHmmqtjlo0",
+  "tags": []
+}
